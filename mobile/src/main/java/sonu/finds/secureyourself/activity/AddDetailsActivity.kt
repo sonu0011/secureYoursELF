@@ -1,31 +1,69 @@
 package sonu.finds.secureyourself.activity
 
 import android.annotation.SuppressLint
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.telecom.TelecomManager
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import kotlinx.android.synthetic.main.activity_add_details.*
 import sonu.finds.secureyourself.R
 import sonu.finds.secureyourself.storage.SharedPrefManager
 import sonu.finds.secureyourself.utills.Constant.Companion.REQUEST_PERMISSION
+import timber.log.Timber
 
 class AddDetailsActivity : AppCompatActivity() {
+    lateinit var handler :Handler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_details)
 
+        handler = Handler(Handler.Callback { msg ->
+            val stuff = msg.data
+            logthis(stuff.getString("logthis"))
+            true
+        })
+
+        val messageFilter = IntentFilter(Intent.ACTION_SEND)
+        val messageReceiver = MessageReceiver()
+        LocalBroadcastManager.getInstance(this).registerReceiver(messageReceiver, messageFilter)
+
 
     }
 
+    fun logthis(newinfo: String?) {
+        if (newinfo!!.compareTo("") != 0) {
+            Toast.makeText(this,newinfo,Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    inner class MessageReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            val message = intent.getStringExtra("message")
+            // Display message in UI
+            Timber.d("OnBroadcastReceiver: "+message)
+
+            logthis(message)
+
+        }
+    }
+
+
+    @SuppressLint("SetTextI18n")
     override fun onStart() {
         super.onStart()
         offerReplacingDefaultDialer()
@@ -61,6 +99,7 @@ class AddDetailsActivity : AppCompatActivity() {
                 contact_2.text.trim().length == 0 ||
                 contact_3.text.trim().length == 0
             ) {
+
                 Toast.makeText(this, "Three Mobile Numbers Are Required For Emergency Calling", Toast.LENGTH_SHORT)
                     .show()
 
@@ -69,6 +108,7 @@ class AddDetailsActivity : AppCompatActivity() {
                 contact_2.text.trim().length < 10 ||
                 contact_3.text.trim().length < 10
             ) {
+
                 Toast.makeText(this, "Please Enter A Valid  Mobile Numbers", Toast.LENGTH_SHORT).show()
 
 
@@ -117,10 +157,16 @@ class AddDetailsActivity : AppCompatActivity() {
     private fun checkSetDefaultDialerResult(resultCode: Int) {
         when (resultCode) {
             RESULT_OK -> {
+
+                if (SharedPrefManager.getInstance(this).GetEmergencyContactNumbers() !=null &&
+                    SharedPrefManager.getInstance(this).GetSelfContactNumber() !=null){
+                    contacts_layout.visibility = View.INVISIBLE
+                    welcomeImage.visibility = View.VISIBLE
+
+                }
                 Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
 
                 //permission granted for default app calling
-                contacts_layout.visibility = View.VISIBLE
 
 
             }

@@ -21,6 +21,20 @@ public class SharedPrefManager {
         }
         return mInstance;
     }
+    public void setCllTimesValue(int value){
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putInt("putCallTimesValue", value);
+        editor.apply();
+    }
+    public int getCallTimes(){
+
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+
+        return sharedPreferences.getInt("putCallTimesValue", -1);
+
+    }
 
     public void SaveSelfContactNumber(String SelfContactNumber) {
 
