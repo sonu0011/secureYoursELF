@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".activity.AddDetailsActivity">
+
+<ImageView android:src="@drawable/welcome"
+           android:background="#fff"
+           android:visibility="gone"
+           android:id="@+id/welcomeImage"
+           android:layout_centerInParent="true"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content" android:contentDescription="TODO"/>
+    <LinearLayout
+            android:visibility="visible"
+            android:id="@+id/contacts_layout"
+            android:layout_margin="10sp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:padding="5dp"
+            android:layout_height="match_parent">
+        <TextView
+                android:id="@+id/self_contact_details"
+                android:text="@string/add_phone_details"
+                android:textSize="18sp"
+                android:padding="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <EditText
+                android:inputType="number"
+                android:hint="@string/enter_your_mobile_number"
+                android:layout_width="match_parent"
+                android:maxLength="10"
+                android:layout_margin="5dp"
+                android:id="@+id/mobile_number"
+                android:layout_height="wrap_content"/>
+        <Button
+                android:id="@+id/save_phone_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Save"
+                android:layout_margin="5sp"
+        />
+
+        <TextView
+                android:id="@+id/emer_contact_details"
+                  android:layout_margin="10sp"
+                  android:textSize="16sp"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:text="@string/emer_heading"
+        />
+        <EditText
+                android:maxLength="10"
+
+                android:inputType="number"
+                  android:layout_width="match_parent"
+                  android:layout_margin="5dp"
+                  android:hint="Contact Number 1"
+                  android:id="@+id/contact_1"
+                  android:layout_height="wrap_content"
+
+        />
+        <EditText
+                android:maxLength="10"
+
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_margin="5dp"
+                android:hint="Contact Number 2"
+                android:id="@+id/contact_2"
+                android:layout_height="wrap_content"
+
+        />
+        <EditText
+                android:maxLength="10"
+
+                android:inputType="number"
+                android:layout_width="match_parent"
+                android:layout_margin="5dp"
+                android:hint="Contact Number 3"
+                android:id="@+id/contact_3"
+                android:layout_height="wrap_content"
+
+        />
+        <Button
+                android:text="Save"
+                android:id="@+id/save_security_btn"
+                android:layout_margin="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+</RelativeLayout>
