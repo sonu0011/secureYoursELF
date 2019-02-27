@@ -23,6 +23,9 @@ object OngoingCall {
             }
             field = value
         }
+    fun  getCallStatus():Call?{
+        return call
+    }
 
     fun answer() {
         call!!.answer(VideoProfile.STATE_AUDIO_ONLY)

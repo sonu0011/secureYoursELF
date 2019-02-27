@@ -7,6 +7,7 @@ class Constant {
         const val SHARED_PREF_NAME = "my_shared_preff"
         var HANGUP_REQUEST = 0
         var NORMAL_CALLING = "normal"
+        const val  PERMISSION_REQUEST_CODE = 121
     }
 
 }

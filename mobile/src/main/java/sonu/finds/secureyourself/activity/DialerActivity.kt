@@ -31,6 +31,7 @@ class DialerActivity : AppCompatActivity() {
     private lateinit var number: String
     var countDownTimer: CountDownTimer? = null
     var countDownTimer1: CountDownTimer? = null
+    var hanguprequest:Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -87,9 +88,12 @@ class DialerActivity : AppCompatActivity() {
                 countDownTimer = object : CountDownTimer(18000, 1000) {
                     override fun onTick(millisUntilFinished: Long) {
                         Timber.d("onTick" + millisUntilFinished)
-                        Log.e("DialerActivity", "countdownTimer  " + millisUntilFinished)
+                        Log.e("DialerActivity", "countdownTimerDialing  " + millisUntilFinished)
                         if (millisUntilFinished < 1000) {
-                            OngoingCall.hangup()
+//                            if(Constant.HANGUP_REQUEST == 0)
+                            if(OngoingCall.getCallStatus() !=null){
+                                OngoingCall.hangup()
+                            }
 
                         }
 
@@ -97,12 +101,12 @@ class DialerActivity : AppCompatActivity() {
                     }
 
                     override fun onFinish() {
-                        if (Constant.HANGUP_REQUEST == 0) {
+
                             Log.e("DialerActivity", "countdownTimerFinish")
 
 //                            OngoingCall.hangup()
 
-                        }
+
 
 
                     }
@@ -123,10 +127,11 @@ class DialerActivity : AppCompatActivity() {
                 countDownTimer1 = object : CountDownTimer(6000, 1000) {
                     override fun onTick(millisUntilFinished: Long) {
                         Timber.d("onTick" + millisUntilFinished)
-                        Log.e("DialerActivity", "countdownTimer1  " + millisUntilFinished)
+                        Log.e("DialerActivity", "countdownTimerActive  " + millisUntilFinished)
                         if (millisUntilFinished < 1000) {
-                            OngoingCall.hangup()
-
+                            if(OngoingCall.getCallStatus() !=null){
+                                OngoingCall.hangup()
+                            }
                         }
                         Constant.HANGUP_REQUEST = 1
 
