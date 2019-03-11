@@ -7,7 +7,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.media.MediaPlayer
 import android.media.MediaRecorder
+import android.net.Uri
 import android.os.*
 import androidx.appcompat.app.AppCompatActivity
 import android.telecom.TelecomManager
@@ -37,6 +39,15 @@ class AddDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_details)
+//        val root: File = android.os.Environment.getExternalStorageDirectory()
+//        val  fileName = root.getAbsolutePath() + "/ScureYourSelf/Audios/" +
+//                "recoded_file"+".mp3"
+//        //
+//        var mp = MediaPlayer.create(this, Uri.parse(fileName))
+//
+//        //mp.prepare()
+//        mp.start()
+
         record_imagevice.setOnClickListener {
 
             StartRecording()

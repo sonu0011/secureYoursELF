@@ -3,6 +3,9 @@ package sonu.finds.secureyourself.activity
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.media.AudioManager
+import android.media.AudioTrack
+import android.media.MediaPlayer
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -23,6 +26,13 @@ import sonu.finds.secureyourself.utills.asString
 import timber.log.Timber
 import java.io.File
 import java.util.concurrent.TimeUnit
+import android.provider.Settings
+
+import com.klinker.android.send_message.Transaction
+import com.google.android.mms.pdu_alt.PduPersister.getBytes
+import com.klinker.android.send_message.Message
+import java.io.IOException
+import java.io.InputStream
 
 
 class DialerActivity : AppCompatActivity() {
@@ -30,14 +40,40 @@ class DialerActivity : AppCompatActivity() {
 
     private lateinit var number: String
     var countDownTimer: CountDownTimer? = null
+    private lateinit var mp: MediaPlayer
+
     var countDownTimer1: CountDownTimer? = null
-    var hanguprequest:Int = 0
+    var hanguprequest: Int = 0
+    lateinit var audioManager: AudioManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(sonu.finds.secureyourself.R.layout.activity_dialer)
         Timber.d("onstart is called")
         number = intent.data!!.schemeSpecificPart
+        audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        audioManager.mode = AudioManager.MODE_NORMAL
+
+        speaker_on_of.setOnClickListener {
+                    try {
+
+
+                        if (!audioManager.isSpeakerphoneOn) {
+                            speaker_on_of.setImageResource(R.drawable.ic_volume_up_black_24dp)
+                            audioManager.setSpeakerphoneOn(true);
+                        }
+                        else {
+                            audioManager.setSpeakerphoneOn(false);
+                            speaker_on_of.setImageResource(R.drawable.ic_volume_down_black_24dp)
+
+
+                        }
+                    } catch (excep: InterruptedException) {
+                        Toast.makeText(this@DialerActivity, "error " + excep.message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+
 
 
     }
@@ -55,6 +91,7 @@ class DialerActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         answer.setOnClickListener {
+
             OngoingCall.answer()
         }
 
@@ -91,8 +128,9 @@ class DialerActivity : AppCompatActivity() {
                         Log.e("DialerActivity", "countdownTimerDialing  " + millisUntilFinished)
                         if (millisUntilFinished < 1000) {
 //                            if(Constant.HANGUP_REQUEST == 0)
-                            if(OngoingCall.getCallStatus() !=null){
+                            if (OngoingCall.getCallStatus() != null) {
                                 OngoingCall.hangup()
+
                             }
 
                         }
@@ -102,11 +140,9 @@ class DialerActivity : AppCompatActivity() {
 
                     override fun onFinish() {
 
-                            Log.e("DialerActivity", "countdownTimerFinish")
+                        Log.e("DialerActivity", "countdownTimerFinish")
 
 //                            OngoingCall.hangup()
-
-
 
 
                     }
@@ -123,14 +159,41 @@ class DialerActivity : AppCompatActivity() {
                 //val songuri = Uri.fromFile(File("//assets/htc.mp3"))
                 if (Constant.NORMAL_CALLING != "normal") {
                     SmsManager.getDefault().sendTextMessage(number, null, messageToSend + "\n" + selfContat, null, null)
+                    val root: File = android.os.Environment.getExternalStorageDirectory()
+                   val  fileName = root.getAbsolutePath() + "/ScureYourSelf/Audios/" +
+                            "recoded_file"+".mp3"
+                    //SmsManager.getDefault().sendMultimediaMessage(this,Uri.parse(fileName),null,null,null)
+//
+//                    val sendSettings = com.klinker.android.send_message.Settings()
+//                    val sendTransaction = Transaction(this, sendSettings)
+//
+//                    val mMessage = Message(messageToSend, number)
+//                    var stream =    getContentResolver().openInputStream(Uri.parse(fileName));
+//                    var  inputData = getBytes(stream.toString())
+//                    mMessage.addAudio(inputData)
+//                    sendTransaction.sendNewMessage(mMessage, Transaction.NO_THREAD_ID)
+                    try {
+                        audioManager.setSpeakerphoneOn(true);
+                        mp = MediaPlayer.create(this,Uri.parse(fileName))
+                        mp.start()
+                    }catch (ex:IOException){
+                        Log.e("DialerActivity", "No file found on this device "+ex.message)
+
+                    }
+
+
                 }
-                countDownTimer1 = object : CountDownTimer(6000, 1000) {
+                countDownTimer1 = object : CountDownTimer(11000, 1000) {
                     override fun onTick(millisUntilFinished: Long) {
+                        if (countDownTimer !=null){
+                            countDownTimer!!.cancel()
+                        }
                         Timber.d("onTick" + millisUntilFinished)
                         Log.e("DialerActivity", "countdownTimerActive  " + millisUntilFinished)
                         if (millisUntilFinished < 1000) {
-                            if(OngoingCall.getCallStatus() !=null){
+                            if (OngoingCall.getCallStatus() != null) {
                                 OngoingCall.hangup()
+                                mp.release()
                             }
                         }
                         Constant.HANGUP_REQUEST = 1
@@ -140,7 +203,7 @@ class DialerActivity : AppCompatActivity() {
                     override fun onFinish() {
                         Log.e("DialerActivity", "countdownTimer1Finish")
 
-                       // OngoingCall.hangup()
+                        // OngoingCall.hangup()
 
 
                     }
@@ -173,6 +236,8 @@ class DialerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+
+
         Toast.makeText(this, "onDestroy" + SharedPrefManager.getInstance(this).callTimes, Toast.LENGTH_SHORT).show()
         if (Constant.NORMAL_CALLING != "normal") {
             if (countDownTimer != null) {
