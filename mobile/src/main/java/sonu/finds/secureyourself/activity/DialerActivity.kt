@@ -4,8 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
-import android.media.AudioTrack
-import android.media.MediaPlayer
+
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -24,32 +23,33 @@ import sonu.finds.secureyourself.utills.Constant
 import sonu.finds.secureyourself.utills.OngoingCall
 import sonu.finds.secureyourself.utills.asString
 import timber.log.Timber
-import java.io.File
 import java.util.concurrent.TimeUnit
-import android.provider.Settings
 
-import com.klinker.android.send_message.Transaction
-import com.google.android.mms.pdu_alt.PduPersister.getBytes
-import com.klinker.android.send_message.Message
-import java.io.IOException
-import java.io.InputStream
+import com.google.android.gms.location.*
 
 
 class DialerActivity : AppCompatActivity() {
+
     private val disposables = CompositeDisposable()
 
     private lateinit var number: String
     var countDownTimer: CountDownTimer? = null
-    private lateinit var mp: MediaPlayer
 
     var countDownTimer1: CountDownTimer? = null
-    var hanguprequest: Int = 0
     lateinit var audioManager: AudioManager
+    lateinit var fusedLocationClient : FusedLocationProviderClient
+    var longitude:Double ? = null
+    var lattitude:Double ? = null
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(sonu.finds.secureyourself.R.layout.activity_dialer)
         Timber.d("onstart is called")
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+
         number = intent.data!!.schemeSpecificPart
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         audioManager.mode = AudioManager.MODE_NORMAL
@@ -77,6 +77,8 @@ class DialerActivity : AppCompatActivity() {
 
 
     }
+
+
 
     companion object {
         fun start(context: Context, call: Call) {
@@ -122,7 +124,7 @@ class DialerActivity : AppCompatActivity() {
         if (Constant.NORMAL_CALLING != "normal") {
             if (state.asString().equals("DIALING")) {
 
-                countDownTimer = object : CountDownTimer(18000, 1000) {
+                countDownTimer = object : CountDownTimer(15000, 1000) {
                     override fun onTick(millisUntilFinished: Long) {
                         Timber.d("onTick" + millisUntilFinished)
                         Log.e("DialerActivity", "countdownTimerDialing  " + millisUntilFinished)
@@ -152,38 +154,75 @@ class DialerActivity : AppCompatActivity() {
             }
 
             if (state.asString().equals("ACTIVE")) {
-                val messageToSend = "Please Help Me,My Mobile Number is"
+
+                Log.e("DialerActivity","Active value of active calling  is"
+                        +SharedPrefManager.getInstance(this).intValue)
+
+                val int =  SharedPrefManager.getInstance(this).callTimes
+                if (int == 0){
+                    //person picks up first time
+                    //SharedPrefManager.getInstance(this).setCllTimesValue(1)
+                }
+                SharedPrefManager.getInstance(this)
+                    .setCallingTimes(
+                        SharedPrefManager.getInstance(this)
+                            .intValue
+                    )
+                Log.e("DialerActivity ","Active value of active boolean array "
+                        +SharedPrefManager.getInstance(this)
+                    .getCallingTimes(
+                        SharedPrefManager.getInstance(this)
+                            .intValue
+                    )
+                )
+//                if (int == 0){
+//                    //set value true
+//                    SharedPrefManager.getInstance(this).setCallingTimes(0)
+//                }
+//                else{
+//                    SharedPrefManager.getInstance(this).setCallingTimes(int-1)
+//
+//                }
+                val messageToSend = "Emergency,Emergency Immediate Help Required"
                 Timber.d("call is active ")
                 val selfContat = SharedPrefManager.getInstance(this).GetSelfContactNumber()
-                // val number = "8727888113"
-                //val songuri = Uri.fromFile(File("//assets/htc.mp3"))
                 if (Constant.NORMAL_CALLING != "normal") {
                     SmsManager.getDefault().sendTextMessage(number, null, messageToSend + "\n" + selfContat, null, null)
-                    val root: File = android.os.Environment.getExternalStorageDirectory()
-                   val  fileName = root.getAbsolutePath() + "/ScureYourSelf/Audios/" +
-                            "recoded_file"+".mp3"
-                    //SmsManager.getDefault().sendMultimediaMessage(this,Uri.parse(fileName),null,null,null)
+
+
+                    val task =  fusedLocationClient.lastLocation
+                    if (task !=null){
+//                        Log.e("tag","task in not null")
+//                        task.addOnSuccessListener{
+//                            Log.e("tag","on success ")
 //
-//                    val sendSettings = com.klinker.android.send_message.Settings()
-//                    val sendTransaction = Transaction(this, sendSettings)
+//                            lattitude = it.latitude
+//                            lattitude.let {
 //
-//                    val mMessage = Message(messageToSend, number)
-//                    var stream =    getContentResolver().openInputStream(Uri.parse(fileName));
-//                    var  inputData = getBytes(stream.toString())
-//                    mMessage.addAudio(inputData)
-//                    sendTransaction.sendNewMessage(mMessage, Transaction.NO_THREAD_ID)
-                    try {
-                        audioManager.setSpeakerphoneOn(true);
-                        mp = MediaPlayer.create(this,Uri.parse(fileName))
-                        mp.start()
-                    }catch (ex:IOException){
-                        Log.e("DialerActivity", "No file found on this device "+ex.message)
+//
+//                            }
+//                            val doublelong = it.longitude
+//                            val doublelat = it.latitude
+//
+//                            Log.e("tag", doublelat.toString()+""+doublelong.toString())
+//                            val LocationToSend = "My Location is\n"
+//                            val smsBody =  StringBuffer();
+//                            smsBody.append("http://maps.google.com?q=");
+//                            smsBody.append(doublelat);
+//                            smsBody.append(",");
+//                            smsBody.append(doublelong);
+//                            SmsManager.getDefault().sendTextMessage(number, null, LocationToSend+smsBody + selfContat, null, null)
+//
+//
+//                        }
+                    }
+                    else{
+                        Log.e("tag","task in  null")
 
                     }
 
-
                 }
-                countDownTimer1 = object : CountDownTimer(11000, 1000) {
+                countDownTimer1 = object : CountDownTimer(7000, 1000) {
                     override fun onTick(millisUntilFinished: Long) {
                         if (countDownTimer !=null){
                             countDownTimer!!.cancel()
@@ -193,7 +232,6 @@ class DialerActivity : AppCompatActivity() {
                         if (millisUntilFinished < 1000) {
                             if (OngoingCall.getCallStatus() != null) {
                                 OngoingCall.hangup()
-                                mp.release()
                             }
                         }
                         Constant.HANGUP_REQUEST = 1
@@ -236,9 +274,14 @@ class DialerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        Log.e("DialerActivity","onDestroyCalled")
+        Log.e("DialerActivity","onDestroyCalled and value of shared prefrence vall value is" +
+                ""+SharedPrefManager.getInstance(this).callTimes)
+        Log.e("DialerActivity","onDestroyCalled and value of boolean  vall value is" +
+                ""+SharedPrefManager.getInstance(this).getCallingTimes(
+            SharedPrefManager.getInstance(this).callTimes
+        ))
 
-
-        Toast.makeText(this, "onDestroy" + SharedPrefManager.getInstance(this).callTimes, Toast.LENGTH_SHORT).show()
         if (Constant.NORMAL_CALLING != "normal") {
             if (countDownTimer != null) {
                 countDownTimer!!.cancel()
@@ -247,28 +290,107 @@ class DialerActivity : AppCompatActivity() {
                 countDownTimer1!!.cancel()
             }
 
-            if (SharedPrefManager.getInstance(this).callTimes == 0) {
+           if (SharedPrefManager.getInstance(this).callTimes == 0
+                &&SharedPrefManager.getInstance(this).getCallingTimes(
+                   SharedPrefManager.getInstance(this).callTimes
+                ) == false) {
+               SharedPrefManager.getInstance(this).intValue = 0
 
+               Log.e("DialerActivity","call times first and call time value is 0 and value is false")
+               if (SharedPrefManager.getInstance(this).getCallingTimes(
+                       SharedPrefManager.getInstance(this).intValue+1
+                   ) == false){
+                   SharedPrefManager.getInstance(this).setCllTimesValue(1)
+
+
+               }
+               else if (SharedPrefManager.getInstance(this).getCallingTimes(
+                       SharedPrefManager.getInstance(this).intValue+2
+                   ) == false){
+                   SharedPrefManager.getInstance(this).setCllTimesValue(2)
+
+
+               }
+                val nos: Array<String> = SharedPrefManager.getInstance(this).GetEmergencyContactNumbers()
+                val intent = Intent(Intent.ACTION_CALL, Uri.fromParts("tel", nos[0], null))
+               intent.putExtra("updateIntent",111);
+               startActivity(intent)
+               return
+
+
+            }
+            if (SharedPrefManager.getInstance(this).callTimes == 1
+                &&SharedPrefManager.getInstance(this).getCallingTimes(
+                    SharedPrefManager.getInstance(this).callTimes
+                ) == false)  {
+                SharedPrefManager.getInstance(this).intValue = 1
+                Log.e("DialerActivity","call times second and call time value is 1 and value is false")
+
+                if (SharedPrefManager.getInstance(this).getCallingTimes(
+                        SharedPrefManager.getInstance(this).intValue+1
+                    ) == false){
+                    SharedPrefManager.getInstance(this).setCllTimesValue(2)
+
+                }
+                else if (SharedPrefManager.getInstance(this).getCallingTimes(
+                        0
+                    ) == false){
+                    SharedPrefManager.getInstance(this).setCllTimesValue(0)
+
+
+                }
                 val nos: Array<String> = SharedPrefManager.getInstance(this).GetEmergencyContactNumbers()
                 val intent = Intent(Intent.ACTION_CALL, Uri.fromParts("tel", nos[1], null))
+                intent.putExtra("updateIntent",111);
+
                 startActivity(intent)
-                SharedPrefManager.getInstance(this).setCllTimesValue(1)
                 return
 
+
+
             }
-            if (SharedPrefManager.getInstance(this).callTimes == 1) {
-                SharedPrefManager.getInstance(this).setCllTimesValue(5)
+            if (SharedPrefManager.getInstance(this).callTimes == 2
+                &&SharedPrefManager.getInstance(this).getCallingTimes(
+                    SharedPrefManager.getInstance(this).callTimes
+                ) == false)  {
+                Log.e("DialerActivity","call times third and call time value is 2 and value is false")
+                SharedPrefManager.getInstance(this).intValue = 2
+                if (SharedPrefManager.getInstance(this).getCallingTimes(
+                        0
+                    ) == false){
+                    SharedPrefManager.getInstance(this).setCllTimesValue(0)
+
+                }
+                else if (SharedPrefManager.getInstance(this).getCallingTimes(
+                        SharedPrefManager.getInstance(this).intValue -1
+                    ) == false){
+                    SharedPrefManager.getInstance(this).setCllTimesValue(1)
+
+
+                }
+
                 val nos: Array<String> = SharedPrefManager.getInstance(this).GetEmergencyContactNumbers()
                 val intent = Intent(Intent.ACTION_CALL, Uri.fromParts("tel", nos[2], null))
+                intent.putExtra("updateIntent",111);
                 startActivity(intent)
+
                 return
 
 
-            } else {
-                SharedPrefManager.getInstance(this).setCllTimesValue(0)
-
             }
+//            else {
+//                Log.e("DialerActivity","else part")
+////                SharedPrefManager.getInstance(this).setCllTimesValue(0)
+////               for (i in 0..2){
+////                   SharedPrefManager.getInstance(this).callingTimes[i] = false
+////                   Log.e("DialerActivity","else part on Destroy After successfull deliver message")
+////
+////
+////               }
+//
+//            }
         }
     }
+
 
 }

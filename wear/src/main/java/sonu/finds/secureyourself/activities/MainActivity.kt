@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.support.wearable.activity.WearableActivity
+import android.widget.Toast
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.tasks.Tasks
 import com.google.android.gms.wearable.Wearable
@@ -67,6 +68,9 @@ class MainActivity : WearableActivity() {
 
                 //Now send the message to each device.
                 for (node in nodes) {
+                    if (node ==null){
+                        Toast.makeText(this@MainActivity,"Connection Lost",Toast.LENGTH_SHORT).show()
+                    }
                     val sendMessageTask =
                         Wearable.getMessageClient(this@MainActivity).sendMessage(node.id, path, message.toByteArray())
 

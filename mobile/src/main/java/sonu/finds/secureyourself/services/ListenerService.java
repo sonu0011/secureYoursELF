@@ -44,9 +44,11 @@ public class ListenerService extends WearableListenerService implements  DataCli
          contactdetails =    SharedPrefManager.getInstance(getApplicationContext()).GetEmergencyContactNumbers();
 
              Intent intent = new Intent(Intent.ACTION_CALL, Uri.fromParts("tel", contactdetails[0], null));
-             startActivity(intent);
+            intent.putExtra("updateIntent",111);
+
+            startActivity(intent);
             SharedPrefManager.getInstance(getApplicationContext()).setCllTimesValue(0);
-            Toast.makeText(this, ""+SharedPrefManager.getInstance(getApplicationContext()).getCallTimes(), Toast.LENGTH_SHORT).show();
+            SharedPrefManager.getInstance(this).setIntValue(0);
 
 
 

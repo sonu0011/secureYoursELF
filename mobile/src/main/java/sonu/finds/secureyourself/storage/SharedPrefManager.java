@@ -7,9 +7,10 @@ import static sonu.finds.secureyourself.utills.Constant.SHARED_PREF_NAME;
 
 public class SharedPrefManager {
 
-    private static   SharedPrefManager mInstance;
+    private static SharedPrefManager mInstance;
 
     private Context mCtx;
+    public boolean[] callingTimes = new boolean[3];
 
     private SharedPrefManager(Context mCtx) {
         this.mCtx = mCtx;
@@ -21,14 +22,57 @@ public class SharedPrefManager {
         }
         return mInstance;
     }
-    public void setCllTimesValue(int value){
+
+    public void setCallingTimes(int position) {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        callingTimes[position] = true;
+
+        editor.putBoolean("setCallingTimes" + position, callingTimes[position]);
+        editor.apply();
+
+
+    }
+
+    public int getIntValue() {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+
+        return sharedPreferences.getInt("putIntValue", -1);    }
+
+    public void setIntValue(int posotion){
+
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt("putIntValue",posotion);
+        editor.apply();
+    }
+
+    public void setFalseValu(int position) {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        callingTimes[position] = false;
+
+        editor.putBoolean("setCallingTimes" + position, callingTimes[position]);
+        editor.apply();
+
+
+    }
+
+    public boolean getCallingTimes(int position) {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+
+        return sharedPreferences.getBoolean("setCallingTimes"+ position, callingTimes[position]);
+    }
+
+    public void setCllTimesValue(int value) {
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         editor.putInt("putCallTimesValue", value);
         editor.apply();
     }
-    public int getCallTimes(){
+
+    public int getCallTimes() {
 
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
 

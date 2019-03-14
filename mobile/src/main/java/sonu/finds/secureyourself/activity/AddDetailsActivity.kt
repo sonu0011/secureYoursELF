@@ -2,24 +2,20 @@ package sonu.finds.secureyourself.activity
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
+import android.app.AlertDialog
+import android.content.*
 import android.content.pm.PackageManager
-import android.media.MediaPlayer
-import android.media.MediaRecorder
+import android.location.LocationManager
 import android.net.Uri
 import android.os.*
+import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
 import android.telecom.TelecomManager
 import android.util.Log
 import android.view.Menu
-import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import kotlinx.android.synthetic.main.activity_add_details.*
@@ -28,40 +24,72 @@ import sonu.finds.secureyourself.storage.SharedPrefManager
 import sonu.finds.secureyourself.utills.Constant
 import sonu.finds.secureyourself.utills.Constant.Companion.REQUEST_PERMISSION
 import timber.log.Timber
-import java.io.File
-import java.io.IOException
 
 class AddDetailsActivity : AppCompatActivity() {
-    lateinit var handler: Handler
-     var mRecoder =  MediaRecorder()
-    lateinit var fileName: String
 
+
+    lateinit var handler: Handler
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_details)
-//        val root: File = android.os.Environment.getExternalStorageDirectory()
-//        val  fileName = root.getAbsolutePath() + "/ScureYourSelf/Audios/" +
-//                "recoded_file"+".mp3"
-//        //
-//        var mp = MediaPlayer.create(this, Uri.parse(fileName))
+        //SharedPrefManager.getInstance(this).setCllTimesValue(0)
+        val intvalue =  intent.getIntExtra("updateIntent",0)
+        if (intvalue == 0 ){
+            Log.e("AddettailsActivity", "no intent")
 //
-//        //mp.prepare()
-//        mp.start()
 
-        record_imagevice.setOnClickListener {
+            for (k in 0..2){
+                Log.e("AddettailsActivity", "inside for loop")
 
-            StartRecording()
-
+                SharedPrefManager.getInstance(this)
+                    .setFalseValu(k)
+            }
         }
+
+
+//        record_imagevice.setOnClickListener {
+//
+//            //StartRecording()
+//
+//        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkRecordedPermission()
+            chekAllPermissions()
         }
 
-        handler = Handler(Handler.Callback { msg ->
+        val locationManager:LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+            Toast.makeText(this, "No Service Provider is available", Toast.LENGTH_SHORT).show();
+            val alertDialog =  AlertDialog.Builder(this);
+
+
+        alertDialog.setTitle("GPS is not Enabled!");
+
+        alertDialog.setMessage("Do you want to turn on GPS?");
+
+            alertDialog.setPositiveButton("YES"){dialog, which ->
+                // Do something when user press the positive button
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+
+                // Change the app background color
+            }
+
+
+            // Display a negative button on alert dialog
+            alertDialog.setNegativeButton("No"){dialog,which ->
+                Toast.makeText(applicationContext,"Please Turn On Gps Location Manually",Toast.LENGTH_SHORT).show()
+         dialog.cancel()
+            }
+
+        alertDialog.show();
+        }
+
+
+            handler = Handler(Handler.Callback { msg ->
             val stuff = msg.data
             logthis(stuff.getString("logthis"))
             true
         })
+
 
         val messageFilter = IntentFilter(Intent.ACTION_SEND)
         val messageReceiver = MessageReceiver()
@@ -70,53 +98,55 @@ class AddDetailsActivity : AppCompatActivity() {
 
     }
 
-    fun StartRecording() {
-        Toast.makeText(this@AddDetailsActivity, "recording Started", Toast.LENGTH_SHORT).show()
-
-        mRecoder.setAudioSource(MediaRecorder.AudioSource.MIC)
-        mRecoder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        val root: File = android.os.Environment.getExternalStorageDirectory()
-        val file: File = File(root.absolutePath + "/ScureYourSelf/Audios")
-        if (!file.exists()) {
-            file.mkdirs()
-        }
-        fileName = root.getAbsolutePath() + "/ScureYourSelf/Audios/" +
-                "recoded_file"+".mp3"
-        mRecoder.setOutputFile(fileName);
-        mRecoder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        var timer: CountDownTimer = object : CountDownTimer(10000, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-
-            }
-
-            override fun onFinish() {
-                Toast.makeText(this@AddDetailsActivity, "recording saved successfully", Toast.LENGTH_SHORT).show()
-                try {
-                    mRecoder.stop();
-                    mRecoder.release();
-                } catch (e: Exception) {
-                    e.printStackTrace();
-                }
-
-            }
 
 
-        }.start()
-
-
-
-
-        try {
-
-            mRecoder.prepare();
-            mRecoder.start();
-        } catch (e: IOException) {
-            e.printStackTrace();
-            Toast.makeText(this, "error" + e.message, Toast.LENGTH_SHORT).show()
-        }
-
-
-    }
+//    fun StartRecording() {
+//        Toast.makeText(this@AddDetailsActivity, "recording Started", Toast.LENGTH_SHORT).show()
+//
+//        mRecoder.setAudioSource(MediaRecorder.AudioSource.MIC)
+//        mRecoder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+//        val root: File = android.os.Environment.getExternalStorageDirectory()
+//        val file: File = File(root.absolutePath + "/ScureYourSelf/Audios")
+//        if (!file.exists()) {
+//            file.mkdirs()
+//        }
+//        fileName = root.getAbsolutePath() + "/ScureYourSelf/Audios/" +
+//                "recoded_file" + ".mp3"
+//        mRecoder.setOutputFile(fileName);
+//        mRecoder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+//        var timer: CountDownTimer = object : CountDownTimer(10000, 1000) {
+//            override fun onTick(millisUntilFinished: Long) {
+//
+//            }
+//
+//            override fun onFinish() {
+//                Toast.makeText(this@AddDetailsActivity, "recording saved successfully", Toast.LENGTH_SHORT).show()
+//                try {
+//                    mRecoder.stop();
+//                    mRecoder.release();
+//                } catch (e: Exception) {
+//                    e.printStackTrace();
+//                }
+//
+//            }
+//
+//
+//        }.start()
+//
+//
+//
+//
+//        try {
+//
+//            mRecoder.prepare();
+//            mRecoder.start();
+//        } catch (e: IOException) {
+//            e.printStackTrace();
+//            Toast.makeText(this, "error" + e.message, Toast.LENGTH_SHORT).show()
+//        }
+//
+//
+//    }
 
     fun logthis(newinfo: String?) {
         if (newinfo!!.compareTo("") != 0) {
@@ -135,26 +165,34 @@ class AddDetailsActivity : AppCompatActivity() {
         }
     }
 
-    fun checkRecordedPermission() {
+    fun chekAllPermissions() {
         if (ContextCompat.checkSelfPermission(
                 this,
-                Manifest.permission.RECORD_AUDIO
+                Manifest.permission.CALL_PHONE
             ) != PackageManager.PERMISSION_GRANTED
             || ContextCompat.checkSelfPermission(
                 this,
-                Manifest.permission.READ_EXTERNAL_STORAGE
+                Manifest.permission.SEND_SMS
             ) != PackageManager.PERMISSION_GRANTED
             || ContextCompat.checkSelfPermission(
                 this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                android.Manifest.permission.ACCESS_FINE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
+            || ContextCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+
         ) {
 
             requestPermissions(
                 arrayOf(
                     Manifest.permission.RECORD_AUDIO,
                     Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+
                 ), Constant.PERMISSION_REQUEST_CODE
             )
 
@@ -163,18 +201,19 @@ class AddDetailsActivity : AppCompatActivity() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == Constant.PERMISSION_REQUEST_CODE) {
-            if (grantResults.size == 3 &&
+            if (grantResults.size == 5 &&
                 grantResults[0] == PackageManager.PERMISSION_GRANTED
                 && grantResults[1] == PackageManager.PERMISSION_GRANTED
                 && grantResults[2] == PackageManager.PERMISSION_GRANTED
+                && grantResults[3] == PackageManager.PERMISSION_GRANTED
+                && grantResults[4] == PackageManager.PERMISSION_GRANTED
             ) {
 
-                Toast.makeText(this, "Record Audio permission granted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "permission granted", Toast.LENGTH_SHORT).show();
 
             } else {
-                Toast.makeText(this, "You must give permissions to use this app. App is exiting.", Toast.LENGTH_SHORT)
-                    .show();
-                finishAffinity();
+                Toast.makeText(this, "You must give permissions to use this app. .", Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }
@@ -183,6 +222,7 @@ class AddDetailsActivity : AppCompatActivity() {
     @SuppressLint("SetTextI18n")
     override fun onStart() {
         super.onStart()
+
         offerReplacingDefaultDialer()
         if (SharedPrefManager.getInstance(this).GetEmergencyContactNumbers() != null &&
             SharedPrefManager.getInstance(this).GetSelfContactNumber() != null
@@ -298,6 +338,15 @@ class AddDetailsActivity : AppCompatActivity() {
 
 
             }
+        }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        for (j in 0..2){
+            val b =  SharedPrefManager.getInstance(this).getCallingTimes(j)
+            Log.e("AddDetOnStart", b.toString())
         }
 
     }
