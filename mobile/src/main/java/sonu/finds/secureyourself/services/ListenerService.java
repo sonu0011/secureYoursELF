@@ -3,12 +3,8 @@ package sonu.finds.secureyourself.services;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataClient;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
@@ -47,8 +43,8 @@ public class ListenerService extends WearableListenerService implements  DataCli
             intent.putExtra("updateIntent",111);
 
             startActivity(intent);
-            SharedPrefManager.getInstance(getApplicationContext()).setCllTimesValue(0);
-            SharedPrefManager.getInstance(this).setIntValue(0);
+            SharedPrefManager.getInstance(getApplicationContext()).SetNextCallTurn(1);
+            SharedPrefManager.getInstance(this).IamGoing(1);
 
 
 

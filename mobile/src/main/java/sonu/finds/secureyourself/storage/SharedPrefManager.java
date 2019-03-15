@@ -23,23 +23,37 @@ public class SharedPrefManager {
         return mInstance;
     }
 
-    public void setCallingTimes(int position) {
+    // checking which has call has picked up
+
+    public void CAllPickUp(int position) {
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         callingTimes[position] = true;
 
-        editor.putBoolean("setCallingTimes" + position, callingTimes[position]);
+        editor.putBoolean("CAllPickUpOrNot" + position, callingTimes[position]);
         editor.apply();
 
 
     }
 
-    public int getIntValue() {
+    public boolean CAllPickUpOrNot(int position) {
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+
+        return sharedPreferences.getBoolean("CAllPickUpOrNot"+ position, callingTimes[position]);
+    }
+//    end of checking which call has picked up
+
+
+
+
+    //checking which is currently goes for calling
+
+    public int WhichHasGone() {
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
         return sharedPreferences.getInt("putIntValue", -1);    }
 
-    public void setIntValue(int posotion){
+    public void IamGoing(int posotion){
 
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -47,24 +61,23 @@ public class SharedPrefManager {
         editor.apply();
     }
 
-    public void setFalseValu(int position) {
+    //end of which is currently goes for calling
+
+
+    public void SetArraYFalseValue(int position) {
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         callingTimes[position] = false;
 
-        editor.putBoolean("setCallingTimes" + position, callingTimes[position]);
+        editor.putBoolean("CAllPickUpOrNot" + position, callingTimes[position]);
         editor.apply();
 
 
     }
 
-    public boolean getCallingTimes(int position) {
-        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+    // checking next call turn
 
-        return sharedPreferences.getBoolean("setCallingTimes"+ position, callingTimes[position]);
-    }
-
-    public void setCllTimesValue(int value) {
+    public void SetNextCallTurn(int value) {
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
@@ -72,13 +85,19 @@ public class SharedPrefManager {
         editor.apply();
     }
 
-    public int getCallTimes() {
+    public int GetNextCallTurn() {
 
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
         return sharedPreferences.getInt("putCallTimesValue", -1);
 
     }
+
+    // end of checking next call turn
+
+
+
+
 
     public void SaveSelfContactNumber(String SelfContactNumber) {
 

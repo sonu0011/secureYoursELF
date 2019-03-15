@@ -155,66 +155,45 @@ class DialerActivity : AppCompatActivity() {
 
             if (state.asString().equals("ACTIVE")) {
 
-                Log.e("DialerActivity","Active value of active calling  is"
-                        +SharedPrefManager.getInstance(this).intValue)
-
-                val int =  SharedPrefManager.getInstance(this).callTimes
-                if (int == 0){
-                    //person picks up first time
-                    //SharedPrefManager.getInstance(this).setCllTimesValue(1)
-                }
+                //setting boolean value of active call
                 SharedPrefManager.getInstance(this)
-                    .setCallingTimes(
+                    .CAllPickUp(
                         SharedPrefManager.getInstance(this)
-                            .intValue
+                            .WhichHasGone()
                     )
-                Log.e("DialerActivity ","Active value of active boolean array "
-                        +SharedPrefManager.getInstance(this)
-                    .getCallingTimes(
-                        SharedPrefManager.getInstance(this)
-                            .intValue
-                    )
-                )
-//                if (int == 0){
-//                    //set value true
-//                    SharedPrefManager.getInstance(this).setCallingTimes(0)
-//                }
-//                else{
-//                    SharedPrefManager.getInstance(this).setCallingTimes(int-1)
-//
-//                }
+
                 val messageToSend = "Emergency,Emergency Immediate Help Required"
                 Timber.d("call is active ")
                 val selfContat = SharedPrefManager.getInstance(this).GetSelfContactNumber()
                 if (Constant.NORMAL_CALLING != "normal") {
                     SmsManager.getDefault().sendTextMessage(number, null, messageToSend + "\n" + selfContat, null, null)
-
-
                     val task =  fusedLocationClient.lastLocation
                     if (task !=null){
-//                        Log.e("tag","task in not null")
-//                        task.addOnSuccessListener{
-//                            Log.e("tag","on success ")
-//
-//                            lattitude = it.latitude
-//                            lattitude.let {
-//
-//
-//                            }
-//                            val doublelong = it.longitude
-//                            val doublelat = it.latitude
-//
-//                            Log.e("tag", doublelat.toString()+""+doublelong.toString())
-//                            val LocationToSend = "My Location is\n"
-//                            val smsBody =  StringBuffer();
-//                            smsBody.append("http://maps.google.com?q=");
-//                            smsBody.append(doublelat);
-//                            smsBody.append(",");
-//                            smsBody.append(doublelong);
-//                            SmsManager.getDefault().sendTextMessage(number, null, LocationToSend+smsBody + selfContat, null, null)
-//
-//
-//                        }
+                        Log.e("tag","task in not null")
+                        task.addOnSuccessListener{
+                        val doublelong = it.longitude
+                        val doublelat = it.latitude
+                        if(doublelat != null && doublelong !=null){
+
+                            Log.e("tag", doublelat.toString()+""+doublelong.toString())
+                            val LocationToSend = "My Location is\n"
+                            val smsBody =  StringBuffer();
+                            smsBody.append("http://maps.google.com?q=");
+                            smsBody.append(doublelat);
+                            smsBody.append(",");
+                            smsBody.append(doublelong);
+                            SmsManager.getDefault().sendTextMessage(number, null, LocationToSend+smsBody + selfContat, null, null)
+
+                        }
+                            else{
+                            Toast.makeText(this,"Unable To Fetch Location",Toast.LENGTH_SHORT).show()
+                        }
+
+
+
+                            }
+
+
                     }
                     else{
                         Log.e("tag","task in  null")
@@ -274,14 +253,6 @@ class DialerActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.e("DialerActivity","onDestroyCalled")
-        Log.e("DialerActivity","onDestroyCalled and value of shared prefrence vall value is" +
-                ""+SharedPrefManager.getInstance(this).callTimes)
-        Log.e("DialerActivity","onDestroyCalled and value of boolean  vall value is" +
-                ""+SharedPrefManager.getInstance(this).getCallingTimes(
-            SharedPrefManager.getInstance(this).callTimes
-        ))
-
         if (Constant.NORMAL_CALLING != "normal") {
             if (countDownTimer != null) {
                 countDownTimer!!.cancel()
@@ -290,106 +261,119 @@ class DialerActivity : AppCompatActivity() {
                 countDownTimer1!!.cancel()
             }
 
-           if (SharedPrefManager.getInstance(this).callTimes == 0
-                &&SharedPrefManager.getInstance(this).getCallingTimes(
-                   SharedPrefManager.getInstance(this).callTimes
-                ) == false) {
-               SharedPrefManager.getInstance(this).intValue = 0
-
-               Log.e("DialerActivity","call times first and call time value is 0 and value is false")
-               if (SharedPrefManager.getInstance(this).getCallingTimes(
-                       SharedPrefManager.getInstance(this).intValue+1
-                   ) == false){
-                   SharedPrefManager.getInstance(this).setCllTimesValue(1)
-
-
-               }
-               else if (SharedPrefManager.getInstance(this).getCallingTimes(
-                       SharedPrefManager.getInstance(this).intValue+2
-                   ) == false){
-                   SharedPrefManager.getInstance(this).setCllTimesValue(2)
-
-
-               }
-                val nos: Array<String> = SharedPrefManager.getInstance(this).GetEmergencyContactNumbers()
-                val intent = Intent(Intent.ACTION_CALL, Uri.fromParts("tel", nos[0], null))
-               intent.putExtra("updateIntent",111);
-               startActivity(intent)
-               return
-
-
-            }
-            if (SharedPrefManager.getInstance(this).callTimes == 1
-                &&SharedPrefManager.getInstance(this).getCallingTimes(
-                    SharedPrefManager.getInstance(this).callTimes
-                ) == false)  {
-                SharedPrefManager.getInstance(this).intValue = 1
-                Log.e("DialerActivity","call times second and call time value is 1 and value is false")
-
-                if (SharedPrefManager.getInstance(this).getCallingTimes(
-                        SharedPrefManager.getInstance(this).intValue+1
-                    ) == false){
-                    SharedPrefManager.getInstance(this).setCllTimesValue(2)
-
-                }
-                else if (SharedPrefManager.getInstance(this).getCallingTimes(
-                        0
-                    ) == false){
-                    SharedPrefManager.getInstance(this).setCllTimesValue(0)
-
-
-                }
-                val nos: Array<String> = SharedPrefManager.getInstance(this).GetEmergencyContactNumbers()
-                val intent = Intent(Intent.ACTION_CALL, Uri.fromParts("tel", nos[1], null))
-                intent.putExtra("updateIntent",111);
-
-                startActivity(intent)
-                return
-
-
-
-            }
-            if (SharedPrefManager.getInstance(this).callTimes == 2
-                &&SharedPrefManager.getInstance(this).getCallingTimes(
-                    SharedPrefManager.getInstance(this).callTimes
-                ) == false)  {
-                Log.e("DialerActivity","call times third and call time value is 2 and value is false")
-                SharedPrefManager.getInstance(this).intValue = 2
-                if (SharedPrefManager.getInstance(this).getCallingTimes(
-                        0
-                    ) == false){
-                    SharedPrefManager.getInstance(this).setCllTimesValue(0)
-
-                }
-                else if (SharedPrefManager.getInstance(this).getCallingTimes(
-                        SharedPrefManager.getInstance(this).intValue -1
-                    ) == false){
-                    SharedPrefManager.getInstance(this).setCllTimesValue(1)
-
-
-                }
-
-                val nos: Array<String> = SharedPrefManager.getInstance(this).GetEmergencyContactNumbers()
-                val intent = Intent(Intent.ACTION_CALL, Uri.fromParts("tel", nos[2], null))
-                intent.putExtra("updateIntent",111);
-                startActivity(intent)
-
-                return
-
-
-            }
-//            else {
-//                Log.e("DialerActivity","else part")
-////                SharedPrefManager.getInstance(this).setCllTimesValue(0)
-////               for (i in 0..2){
-////                   SharedPrefManager.getInstance(this).callingTimes[i] = false
-////                   Log.e("DialerActivity","else part on Destroy After successfull deliver message")
-////
-////
-////               }
-//
-//            }
         }
+        //loging the values
+        Log.e("DialerActivityOnDestroy","getNextCllTurn"+
+                SharedPrefManager.getInstance(this).GetNextCallTurn())
+        Log.e("DialerActivityOnDestroy","callPickUpOrNot"+
+                SharedPrefManager.getInstance(this)
+                    .CAllPickUpOrNot(SharedPrefManager.getInstance(this).GetNextCallTurn()))
+
+
+        //call turns settings
+
+        if (SharedPrefManager.getInstance(this).GetNextCallTurn() == 1 &&
+            !SharedPrefManager.getInstance(this).CAllPickUpOrNot(1))
+        {
+            Log.e("DialerActivity","call NextCallturn 1 and not picked false")
+            //setting up that i am going to make a call
+            SharedPrefManager.getInstance(this).IamGoing(1)
+            //setting up next call turn
+            if (!SharedPrefManager.getInstance(this).CAllPickUpOrNot(2)){
+                Log.e("DialerActivity","call not pickUp By call 2")
+                SharedPrefManager.getInstance(this).SetNextCallTurn(2)
+            }
+            if (!SharedPrefManager.getInstance(this).CAllPickUpOrNot(0)){
+                Log.e("DialerActivity","call not pickUp By call 0")
+
+                SharedPrefManager.getInstance(this).SetNextCallTurn(0)
+            }
+
+
+            // second call and call not pickUp
+            val nos: Array<String> = SharedPrefManager.getInstance(this).GetEmergencyContactNumbers()
+            val intent = Intent(Intent.ACTION_CALL, Uri.fromParts("tel", nos[1], null))
+            intent.putExtra("updateIntent",111);
+            startActivity(intent)
+            return
+
+        }
+
+
+        if (SharedPrefManager.getInstance(this).GetNextCallTurn() == 2 &&
+            !SharedPrefManager.getInstance(this).CAllPickUpOrNot(2))
+        {
+            Log.e("DialerActivity","call NextCallturn 2 and not picked false")
+
+            //setting up that i am going to make a call
+            SharedPrefManager.getInstance(this).IamGoing(2)
+            //setting up next call turn
+            if (!SharedPrefManager.getInstance(this).CAllPickUpOrNot(0)){
+                Log.e("DialerActivity","call not pickUp By call 0")
+
+                SharedPrefManager.getInstance(this).SetNextCallTurn(0)
+            }
+            if (!SharedPrefManager.getInstance(this).CAllPickUpOrNot(1)){
+                Log.e("DialerActivity","call not pickUp By call 1")
+
+                SharedPrefManager.getInstance(this).SetNextCallTurn(1)
+            }
+
+
+            // second call and call not pickUp
+            val nos: Array<String> = SharedPrefManager.getInstance(this).GetEmergencyContactNumbers()
+            val intent = Intent(Intent.ACTION_CALL, Uri.fromParts("tel", nos[2], null))
+            intent.putExtra("updateIntent",111);
+            startActivity(intent)
+            return
+
+        }
+
+
+        if (SharedPrefManager.getInstance(this).GetNextCallTurn() == 0 &&
+            !SharedPrefManager.getInstance(this).CAllPickUpOrNot(0))
+        {
+            Log.e("DialerActivity","call NextCallturn 0 and not picked false")
+
+            //setting up that i am going to make a call
+            SharedPrefManager.getInstance(this).IamGoing(0)
+            //setting up next call turn
+            if (!SharedPrefManager.getInstance(this).CAllPickUpOrNot(1)){
+                Log.e("DialerActivity","call not pickUp By call 1")
+
+                SharedPrefManager.getInstance(this).SetNextCallTurn(1)
+            }
+            if (!SharedPrefManager.getInstance(this).CAllPickUpOrNot(2)){
+                Log.e("DialerActivity","call not pickUp By call 2")
+
+                SharedPrefManager.getInstance(this).SetNextCallTurn(2)
+            }
+
+
+            // second call and call not pickUp
+            val nos: Array<String> = SharedPrefManager.getInstance(this).GetEmergencyContactNumbers()
+            val intent = Intent(Intent.ACTION_CALL, Uri.fromParts("tel", nos[0], null))
+            intent.putExtra("updateIntent",111);
+            startActivity(intent)
+            return
+
+        }
+
+        //setting value  false after pickingUp all the calls
+        if (SharedPrefManager.getInstance(this).CAllPickUpOrNot(0)
+            &&SharedPrefManager.getInstance(this).CAllPickUpOrNot(1)
+            &&SharedPrefManager.getInstance(this).CAllPickUpOrNot(2)){
+            Log.e("DialerActivity","all call pickUp")
+
+
+            SharedPrefManager.getInstance(this).SetArraYFalseValue(0)
+            SharedPrefManager.getInstance(this).SetArraYFalseValue(1)
+            SharedPrefManager.getInstance(this).SetArraYFalseValue(2)
+        }
+
+
+
+
     }
 
 

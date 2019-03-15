@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SecureYourSelf</string>
+    <string name="app_name">QAlert</string>
     <string name="add_phone_details">Add Contact Number You Want To Send</string>
     <string name="enter_your_mobile_number">Enter Your Mobile Number</string>
     <string name="emer_heading">Add Contact Numbers You Want to call during Emergency</string>

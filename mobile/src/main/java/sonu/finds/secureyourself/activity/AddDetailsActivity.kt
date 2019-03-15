@@ -6,7 +6,6 @@ import android.app.AlertDialog
 import android.content.*
 import android.content.pm.PackageManager
 import android.location.LocationManager
-import android.net.Uri
 import android.os.*
 import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
@@ -32,17 +31,17 @@ class AddDetailsActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_details)
-        //SharedPrefManager.getInstance(this).setCllTimesValue(0)
+        //SharedPrefManager.getInstance(this).SetNextCallTurn(0)
         val intvalue =  intent.getIntExtra("updateIntent",0)
         if (intvalue == 0 ){
             Log.e("AddettailsActivity", "no intent")
 //
-
+//
             for (k in 0..2){
                 Log.e("AddettailsActivity", "inside for loop")
 
                 SharedPrefManager.getInstance(this)
-                    .setFalseValu(k)
+                    .SetArraYFalseValue(k)
             }
         }
 
@@ -80,7 +79,7 @@ class AddDetailsActivity : AppCompatActivity() {
          dialog.cancel()
             }
 
-        alertDialog.show();
+        alertDialog.show()
         }
 
 
@@ -345,7 +344,7 @@ class AddDetailsActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         for (j in 0..2){
-            val b =  SharedPrefManager.getInstance(this).getCallingTimes(j)
+            val b =  SharedPrefManager.getInstance(this).CAllPickUpOrNot(j)
             Log.e("AddDetOnStart", b.toString())
         }
 
