@@ -23,6 +23,23 @@ public class SharedPrefManager {
         return mInstance;
     }
 
+    //store self name
+    public void storeSelfName(String name){
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+
+        editor.putString("storeSelfNumber" , name);
+        editor.apply();
+    }
+    public String getSelfNmae(){
+
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+
+        return sharedPreferences.getString("storeSelfNumber","");
+
+    }
+
     // checking which has call has picked up
 
     public void CAllPickUp(int position) {
@@ -99,7 +116,7 @@ public class SharedPrefManager {
 
 
 
-    public void SaveSelfContactNumber(String SelfContactNumber) {
+    public void saveSelfContactNumber(String SelfContactNumber) {
 
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -121,11 +138,26 @@ public class SharedPrefManager {
 
     }
 
-    public String GetSelfContactNumber() {
+    public String getSelfContactNumber() {
         SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
 
         return sharedPreferences.getString("SelfContactNumber", null);
 
+    }
+
+    // store message and get message
+    public void storeMessage(String message){
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        editor.putString("storeMessage",message);
+        editor.apply();
+    }
+    public String getStoreMessage(){
+
+        SharedPreferences sharedPreferences = mCtx.getSharedPreferences(SHARED_PREF_NAME, Context.MODE_PRIVATE);
+
+        return sharedPreferences.getString("storeMessage", null);
     }
 
     public String[] GetEmergencyContactNumbers() {

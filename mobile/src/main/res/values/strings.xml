@@ -1,6 +1,8 @@
 <resources>
-    <string name="app_name">QAlert</string>
-    <string name="add_phone_details">Add Contact Number You Want To Send</string>
-    <string name="enter_your_mobile_number">Enter Your Mobile Number</string>
-    <string name="emer_heading">Add Contact Numbers You Want to call during Emergency</string>
+    <string name="app_name">HS-Alert</string>
+    <string name="add_phone_details">Enter name to be sent in alert</string>
+    <string name="enter_your_mobile_number">Enter name</string>
+    <string name="emer_heading">Add contacts to alert in emergency</string>
+    <string name="update_phone_details">Update contacts to alert in emergency</string>
+    <string name="eup_mer_heading">Update contacts to alert in emergency</string>
 </resources>

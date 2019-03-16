@@ -3,30 +3,36 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:background="@color/dark_grey"
+        android:background="#424242"
+        android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".activities.MainActivity"
         tools:deviceIds="wear"
+
         android:padding="@dimen/box_inset_layout_padding">
 
     <LinearLayout
+            android:background="@drawable/background"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center_horizontal"
+            android:gravity="center"
             android:orientation="vertical"
     >
 
-        <Button
+        <TextView
+
                 android:id="@+id/wrbutton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="send message"/>
+                android:text=" Send Alert"
+                android:textColor="#fff"
+                android:textSize="20sp"
+                android:padding="10dp"
+                android:layout_gravity="center"
 
-        <TextView
-                android:id="@+id/text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
         />
+
+
     </LinearLayout>
 </androidx.wear.widget.BoxInsetLayout>

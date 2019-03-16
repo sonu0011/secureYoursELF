@@ -6,37 +6,51 @@ import android.app.AlertDialog
 import android.content.*
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.net.Uri
 import android.os.*
 import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
 import android.telecom.TelecomManager
+import android.telephony.SmsManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
+import android.widget.ScrollView
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import kotlinx.android.synthetic.main.activity_add_details.*
 import sonu.finds.secureyourself.R
 import sonu.finds.secureyourself.storage.SharedPrefManager
-import sonu.finds.secureyourself.utills.Constant
 import sonu.finds.secureyourself.utills.Constant.Companion.REQUEST_PERMISSION
 import timber.log.Timber
+import java.lang.NullPointerException
 
 class AddDetailsActivity : AppCompatActivity() {
 
 
     lateinit var handler: Handler
+    val REQUEST_ID_MULTIPLE_PERMISSIONS = 1
+
+    private val TAG = "AddDetailsActivity"
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_details)
-        //SharedPrefManager.getInstance(this).SetNextCallTurn(0)
+
+        //check permission for default calling app
+         offerReplacingDefaultDialer()
+
         val intvalue =  intent.getIntExtra("updateIntent",0)
         if (intvalue == 0 ){
             Log.e("AddettailsActivity", "no intent")
-//
-//
+
             for (k in 0..2){
                 Log.e("AddettailsActivity", "inside for loop")
 
@@ -45,19 +59,12 @@ class AddDetailsActivity : AppCompatActivity() {
             }
         }
 
-
-//        record_imagevice.setOnClickListener {
-//
-//            //StartRecording()
-//
-//        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            chekAllPermissions()
+            checkAndRequestPermissions()
         }
 
         val locationManager:LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-            Toast.makeText(this, "No Service Provider is available", Toast.LENGTH_SHORT).show();
             val alertDialog =  AlertDialog.Builder(this);
 
 
@@ -98,55 +105,6 @@ class AddDetailsActivity : AppCompatActivity() {
     }
 
 
-
-//    fun StartRecording() {
-//        Toast.makeText(this@AddDetailsActivity, "recording Started", Toast.LENGTH_SHORT).show()
-//
-//        mRecoder.setAudioSource(MediaRecorder.AudioSource.MIC)
-//        mRecoder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-//        val root: File = android.os.Environment.getExternalStorageDirectory()
-//        val file: File = File(root.absolutePath + "/ScureYourSelf/Audios")
-//        if (!file.exists()) {
-//            file.mkdirs()
-//        }
-//        fileName = root.getAbsolutePath() + "/ScureYourSelf/Audios/" +
-//                "recoded_file" + ".mp3"
-//        mRecoder.setOutputFile(fileName);
-//        mRecoder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-//        var timer: CountDownTimer = object : CountDownTimer(10000, 1000) {
-//            override fun onTick(millisUntilFinished: Long) {
-//
-//            }
-//
-//            override fun onFinish() {
-//                Toast.makeText(this@AddDetailsActivity, "recording saved successfully", Toast.LENGTH_SHORT).show()
-//                try {
-//                    mRecoder.stop();
-//                    mRecoder.release();
-//                } catch (e: Exception) {
-//                    e.printStackTrace();
-//                }
-//
-//            }
-//
-//
-//        }.start()
-//
-//
-//
-//
-//        try {
-//
-//            mRecoder.prepare();
-//            mRecoder.start();
-//        } catch (e: IOException) {
-//            e.printStackTrace();
-//            Toast.makeText(this, "error" + e.message, Toast.LENGTH_SHORT).show()
-//        }
-//
-//
-//    }
-
     fun logthis(newinfo: String?) {
         if (newinfo!!.compareTo("") != 0) {
             Toast.makeText(this, newinfo, Toast.LENGTH_SHORT).show()
@@ -164,57 +122,147 @@ class AddDetailsActivity : AppCompatActivity() {
         }
     }
 
-    fun chekAllPermissions() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.CALL_PHONE
-            ) != PackageManager.PERMISSION_GRANTED
-            || ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.SEND_SMS
-            ) != PackageManager.PERMISSION_GRANTED
-            || ContextCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-            || ContextCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
 
-        ) {
+    private fun checkAndRequestPermissions(): Boolean {
+        val callpermission = ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE)
+        val accessfinelocation = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+        val accesscoarselocation = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+        val smspermission = ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS)
+        val phonestatepermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE)
+//        val readphonenumberpermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_NUMBERS)
+//        val accessnetworkstatepermisson = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE)
 
-            requestPermissions(
-                arrayOf(
-                    Manifest.permission.RECORD_AUDIO,
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
 
-                ), Constant.PERMISSION_REQUEST_CODE
-            )
+        val listPermissionsNeeded = ArrayList<String>()
 
+        if (callpermission != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.CALL_PHONE)
         }
+        if (accessfinelocation != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+        if (accesscoarselocation != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.ACCESS_COARSE_LOCATION)
+        }
+
+        if (smspermission != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.SEND_SMS)
+        }
+        if (phonestatepermission != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.READ_PHONE_STATE)
+        }
+//        if (readphonenumberpermission != PackageManager.PERMISSION_GRANTED) {
+//            listPermissionsNeeded.add(Manifest.permission.READ_PHONE_NUMBERS)
+//        }
+//        if (accessnetworkstatepermisson != PackageManager.PERMISSION_GRANTED) {
+//            listPermissionsNeeded.add(Manifest.permission.ACCESS_NETWORK_STATE)
+//        }
+
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toTypedArray(), REQUEST_ID_MULTIPLE_PERMISSIONS)
+            return false
+        }
+        return true
     }
 
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode == Constant.PERMISSION_REQUEST_CODE) {
-            if (grantResults.size == 5 &&
-                grantResults[0] == PackageManager.PERMISSION_GRANTED
-                && grantResults[1] == PackageManager.PERMISSION_GRANTED
-                && grantResults[2] == PackageManager.PERMISSION_GRANTED
-                && grantResults[3] == PackageManager.PERMISSION_GRANTED
-                && grantResults[4] == PackageManager.PERMISSION_GRANTED
-            ) {
+//
 
-                Toast.makeText(this, "permission granted", Toast.LENGTH_SHORT).show();
 
-            } else {
-                Toast.makeText(this, "You must give permissions to use this app. .", Toast.LENGTH_SHORT)
-                    .show()
+        Log.d(TAG, "Permission callback called-------")
+        when (requestCode) {
+            REQUEST_ID_MULTIPLE_PERMISSIONS -> {
+
+                val perms = HashMap<String, Int>()
+                // Initialize the map with both permissions
+
+                perms[Manifest.permission.CALL_PHONE] = PackageManager.PERMISSION_GRANTED
+                perms[Manifest.permission.ACCESS_FINE_LOCATION] = PackageManager.PERMISSION_GRANTED
+                perms[Manifest.permission.ACCESS_COARSE_LOCATION] = PackageManager.PERMISSION_GRANTED
+                perms[Manifest.permission.SEND_SMS] = PackageManager.PERMISSION_GRANTED
+                perms[Manifest.permission.READ_PHONE_STATE] = PackageManager.PERMISSION_GRANTED
+//                perms[Manifest.permission.READ_PHONE_NUMBERS] = PackageManager.PERMISSION_GRANTED
+//                perms[Manifest.permission.ACCESS_NETWORK_STATE] = PackageManager.PERMISSION_GRANTED
+
+                // Fill with actual results from user
+
+                if (grantResults.size > 0) {
+                    for (i in permissions.indices)
+                        perms[permissions[i]] = grantResults[i]
+
+
+                    if (perms[Manifest.permission.CALL_PHONE] == PackageManager.PERMISSION_GRANTED
+                        && perms[Manifest.permission.ACCESS_FINE_LOCATION] == PackageManager.PERMISSION_GRANTED
+                        && perms[Manifest.permission.ACCESS_COARSE_LOCATION] == PackageManager.PERMISSION_GRANTED
+                        && perms[Manifest.permission.SEND_SMS] == PackageManager.PERMISSION_GRANTED
+                        && perms[Manifest.permission.READ_PHONE_STATE] == PackageManager.PERMISSION_GRANTED
+                        //&& perms[Manifest.permission.READ_PHONE_NUMBERS] == PackageManager.PERMISSION_GRANTED
+                        //&& perms[Manifest.permission.ACCESS_NETWORK_STATE] == PackageManager.PERMISSION_GRANTED
+                    ) {
+
+                        Log.d(TAG, "sms & location services permission granted")
+                        // process the normal flow
+
+
+
+                        //else any one or both the permissions are not granted
+                    } else {
+                        Log.d(TAG, "Some permissions are not granted ask again ")
+                        //permission is denied (this is the first time, when "never ask again" is not checked) so ask again explaining the usage of permission
+                        //                        // shouldShowRequestPermissionRationale will return true
+                        //show the dialog or snackbar saying its necessary and try again otherwise proceed with setup.
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CALL_PHONE)
+                            || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                            || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                            || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_SMS)
+                            || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_STATE)
+                           // || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_PHONE_NUMBERS)
+                         //   || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_NETWORK_STATE)
+                        ) {
+                            showDialogOK("All  Permissions are required for this app",
+                                DialogInterface.OnClickListener { dialog, which ->
+                                    when (which) {
+                                        DialogInterface.BUTTON_POSITIVE -> checkAndRequestPermissions()
+                                        DialogInterface.BUTTON_NEGATIVE ->
+                                            // proceed with logic by disabling the related features or quit the app.
+                                            finish()
+                                    }
+                                })
+                        } else {
+                            explain("You need to give some mandatory permissions to continue. Do you want to go to app settings?")
+                            //                            //proceed with logic by disabling the related features or quit the app.
+                        }//permission is denied (and never ask again is  checked)
+                        //shouldShowRequestPermissionRationale will return false
+                    }
+                }
             }
         }
+
+
+
+    }
+
+    fun showDialogOK(message: String, okListener: DialogInterface.OnClickListener) {
+        AlertDialog.Builder(this)
+            .setMessage(message)
+            .setPositiveButton("OK", okListener)
+            .setNegativeButton("Cancel", okListener)
+            .create()
+            .show()
+    }
+
+    fun explain(msg: String) {
+        val dialog = AlertDialog.Builder(this)
+        dialog.setMessage(msg)
+            .setPositiveButton("Yes") { paramDialogInterface, paramInt ->
+                //  permissionsclass.requestPermission(type,code);
+                startActivity(Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,Uri.parse(packageName)))
+            }
+            .setNegativeButton("Cancel") {
+                    paramDialogInterface, paramInt -> finish()
+            }
+        dialog.show()
     }
 
 
@@ -222,72 +270,77 @@ class AddDetailsActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        offerReplacingDefaultDialer()
         if (SharedPrefManager.getInstance(this).GetEmergencyContactNumbers() != null &&
-            SharedPrefManager.getInstance(this).GetSelfContactNumber() != null
+            SharedPrefManager.getInstance(this).getSelfContactNumber() != null
+            && SharedPrefManager.getInstance(this).selfContactNumber !=null
+            && SharedPrefManager.getInstance(this).storeMessage !=null
         ) {
-            contacts_layout.visibility = View.INVISIBLE
+
+            contacts_layout.visibility = View.GONE
             welcomeImage.visibility = View.VISIBLE
 
         }
 
 
 
-        save_phone_number.setOnClickListener {
-            if (mobile_number.text.trim().length == 0) {
-                Toast.makeText(this, "Please Enter Your Mobile Number", Toast.LENGTH_SHORT).show()
-            } else if (mobile_number.text.trim().length < 10) {
-                Toast.makeText(this, "Please Enter A Valid  Mobile Number", Toast.LENGTH_SHORT).show()
-
-
-            } else {
-                SharedPrefManager.getInstance(this).SaveSelfContactNumber(mobile_number.text.toString())
-                self_contact_details.setText("Mobile Number Saved Successfully")
-                // Toast.makeText(this, "Mobile Number Saved Successfully", Toast.LENGTH_SHORT).show()
-                mobile_number.setText("")
-                save_phone_number.isEnabled = false;
-
+        save_details_btn.setOnClickListener {
+            if (user_name.text.toString().trim().length == 0){
+                Toast.makeText(this,"Please Enter Your Name",Toast.LENGTH_SHORT).show()
             }
-        }
+            else if (mobile_number.text.toString().length == 0){
+                Toast.makeText(this,"Please Enter Your Contact Number",Toast.LENGTH_SHORT).show()
+            }
+            else if (mobile_number.text.toString().length < 10){
+                Toast.makeText(this,"Please Enter  A Valid Contact Number",Toast.LENGTH_SHORT).show()
+            }
+            else if (contact_1.text.toString().length == 0){
+                Toast.makeText(this,"Please Enter First  Contact Number You Want to Alert",Toast.LENGTH_SHORT).show()
+            }
+            else if (contact_2.text.toString().length == 0){
+                Toast.makeText(this,"Please Enter Second  Contact Number You Want to Alert",Toast.LENGTH_SHORT).show()
+            }
+            else if (contact_3.text.toString().length == 0){
+                Toast.makeText(this,"Please Enter Third  Contact Number You Want to Alert",Toast.LENGTH_SHORT).show()
+            }
+            else if (contact_1.text.toString().length  < 10){
+                Toast.makeText(this,"Invalid First Contact Number",Toast.LENGTH_SHORT).show()
+            }
+            else if (contact_2.text.toString().length  < 10){
+                Toast.makeText(this,"Invalid Second Contact Number",Toast.LENGTH_SHORT).show()
+            }
+            else if (contact_3.text.toString().length  < 10){
+                Toast.makeText(this,"Invalid Third Contact Number",Toast.LENGTH_SHORT).show()
+            }
+            else if (user_message.text.toString().trim().length  == 0){
+                Toast.makeText(this,"Please Enter Your Message",Toast.LENGTH_SHORT).show()
+            }
+            else{
+                Toast.makeText(this,"Details Added Successfully",Toast.LENGTH_SHORT).show()
 
-        save_security_btn.setOnClickListener {
-
-            if (contact_1.text.trim().length == 0 ||
-                contact_2.text.trim().length == 0 ||
-                contact_3.text.trim().length == 0
-            ) {
-
-                Toast.makeText(this, "Three Mobile Numbers Are Required For Emergency Calling", Toast.LENGTH_SHORT)
-                    .show()
-
-
-            } else if (contact_1.text.trim().length < 10 ||
-                contact_2.text.trim().length < 10 ||
-                contact_3.text.trim().length < 10
-            ) {
-
-                Toast.makeText(this, "Please Enter A Valid  Mobile Numbers", Toast.LENGTH_SHORT).show()
-
-
-            } else {
-
+                SharedPrefManager.getInstance(this).saveSelfContactNumber(
+                    mobile_number.text.toString()
+                )
+                SharedPrefManager.getInstance(this).storeSelfName(
+                    user_name.text.toString()
+                )
                 SharedPrefManager.getInstance(this).SaveEmergencyContactNumbers(
                     contact_1.text.toString(),
-                    contact_2.text.toString(), contact_3.text.toString()
+                    contact_2.text.toString(),
+                    contact_3.text.toString()
+
                 )
-                emer_contact_details.setText("Contact  Numbers are Saved Successfully")
-                //Toast.makeText(this, "Contact  Numbers are Saved Successfully", Toast.LENGTH_SHORT).show()
-                contact_1.setText("")
-                contact_2.setText("")
-                contact_3.setText("")
-                save_security_btn.isEnabled = false;
+                SharedPrefManager.getInstance(this).storeMessage(user_message.text.toString())
+                startActivity(Intent(this,AddDetailsActivity::class.java))
+
+            }
+
 
 
             }
         }
 
 
-    }
+
 
     @SuppressLint("ObsoleteSdkInt")
     private fun offerReplacingDefaultDialer() {
@@ -316,20 +369,44 @@ class AddDetailsActivity : AppCompatActivity() {
             RESULT_OK -> {
 
                 if (SharedPrefManager.getInstance(this).GetEmergencyContactNumbers() != null &&
-                    SharedPrefManager.getInstance(this).GetSelfContactNumber() != null
+                    SharedPrefManager.getInstance(this).getSelfContactNumber() != null
                 ) {
                     contacts_layout.visibility = View.INVISIBLE
                     welcomeImage.visibility = View.VISIBLE
 
                 }
-                Toast.makeText(this, "Permission Granted", Toast.LENGTH_SHORT).show()
 
                 //permission granted for default app calling
 
 
             }
             RESULT_CANCELED -> {
-                Toast.makeText(this, "Default Dialer Permission is Required", Toast.LENGTH_SHORT).show()
+
+                val alertDialog =  AlertDialog.Builder(this);
+
+
+                alertDialog.setTitle("Default Dialer!");
+                alertDialog.setCancelable(false)
+
+                alertDialog.setMessage("Default Dialer Permission is Required");
+
+                alertDialog.setPositiveButton("YES"){dialog, which ->
+                    // Do something when user press the positive button
+                    offerReplacingDefaultDialer()
+
+                    // Change the app background color
+                }
+
+
+                // Display a negative button on alert dialog
+                alertDialog.setNegativeButton("No"){dialog,which ->
+                    Toast.makeText(applicationContext,"Please Turn On Gps Location Manually",Toast.LENGTH_SHORT).show()
+                    dialog.cancel()
+                    finishAffinity()
+                }
+
+                alertDialog.show()
+
 
             }
             else -> {
@@ -341,12 +418,16 @@ class AddDetailsActivity : AppCompatActivity() {
 
     }
 
+    @SuppressLint("MissingPermission")
     override fun onResume() {
         super.onResume()
         for (j in 0..2){
             val b =  SharedPrefManager.getInstance(this).CAllPickUpOrNot(j)
-            Log.e("AddDetOnStart", b.toString())
+            Log.e("AddDetails", b.toString())
         }
+
+
+
 
     }
 
@@ -354,9 +435,7 @@ class AddDetailsActivity : AppCompatActivity() {
         menuInflater.inflate(R.menu.update_menu_item, menu)
         return true;//for opening the menu pop up
 
-
     }
-
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if (item!!.itemId == R.id.update_item) {
             val intent = Intent(this, UpdateContactDetails::class.java)

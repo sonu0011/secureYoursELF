@@ -1,5 +1,6 @@
 package sonu.finds.secureyourself.activity
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -17,15 +18,18 @@ class UpdateContactDetails : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update_contact_details)
 
-        sharedPrefManager =  SharedPrefManager.getInstance(this);
-        mobile_number_update.setText( sharedPrefManager.GetSelfContactNumber())
+        sharedPrefManager =  SharedPrefManager.getInstance(this)
+        up_user_name.setText(sharedPrefManager.selfNmae)
+        up_contact_number.setText( sharedPrefManager.getSelfContactNumber())
         contactnumbers = sharedPrefManager.GetEmergencyContactNumbers()
+
 
         contact_1_update.setText(contactnumbers[0])
         contact_2_update.setText(contactnumbers[1])
         contact_3_update.setText(contactnumbers[2])
 
 
+        up_user_message.setText(sharedPrefManager.storeMessage)
 
 
 
@@ -34,56 +38,58 @@ class UpdateContactDetails : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        save_phone_number_update.setOnClickListener {
-            if (mobile_number_update.text.trim().length == 0) {
-                Toast.makeText(this, "Please Enter Your Mobile Number", Toast.LENGTH_SHORT).show()
-            } else if (mobile_number_update.text.trim().length < 10) {
-                Toast.makeText(this, "Please Enter A Valid  Mobile Number", Toast.LENGTH_SHORT).show()
+        update_contact_details.setOnClickListener {
 
-
-            } else {
-                SharedPrefManager.getInstance(this).SaveSelfContactNumber(mobile_number_update.text.toString())
-                self_contact_details_update.setText("Mobile Number Updated Successfully")
-                // Toast.makeText(this, "Mobile Number Saved Successfully", Toast.LENGTH_SHORT).show()
-                mobile_number_update.setText("")
-                save_phone_number_update.isEnabled = false;
-
+            if (up_user_name.text.toString().trim().length == 0){
+                Toast.makeText(this,"Please Enter Your Name",Toast.LENGTH_SHORT).show()
             }
-        }
+            else if (up_contact_number.text.toString().length == 0){
+                Toast.makeText(this,"Please Enter Your Contact Number",Toast.LENGTH_SHORT).show()
+            }
+            else if (up_contact_number.text.toString().length < 10){
+                Toast.makeText(this,"Please Enter  A Valid Contact Number",Toast.LENGTH_SHORT).show()
+            }
+            else if (contact_1_update.text.toString().length == 0){
+                Toast.makeText(this,"Please Enter First  Contact Number You Want to Alert",Toast.LENGTH_SHORT).show()
+            }
+            else if (contact_2_update.text.toString().length == 0){
+                Toast.makeText(this,"Please Enter Second  Contact Number You Want to Alert",Toast.LENGTH_SHORT).show()
+            }
+            else if (contact_3_update.text.toString().length == 0){
+                Toast.makeText(this,"Please Enter Third  Contact Number You Want to Alert",Toast.LENGTH_SHORT).show()
+            }
+            else if (contact_1_update.text.toString().length  < 10){
+                Toast.makeText(this,"Invalid First Contact Number",Toast.LENGTH_SHORT).show()
+            }
+            else if (contact_2_update.text.toString().length  < 10){
+                Toast.makeText(this,"Invalid Second Contact Number",Toast.LENGTH_SHORT).show()
+            }
+            else if (contact_3_update.text.toString().length  < 10){
+                Toast.makeText(this,"Invalid Third Contact Number",Toast.LENGTH_SHORT).show()
+            }
+            else{
 
-        save_security_btn_update.setOnClickListener {
+                Toast.makeText(this," Details Updated Successfully ",Toast.LENGTH_SHORT).show()
 
-            if (contact_1_update.text.trim().length == 0 ||
-                contact_2_update.text.trim().length == 0 ||
-                contact_3_update.text.trim().length == 0
-            ) {
-                Toast.makeText(this, "Three Mobile Numbers Are Required For Emergency Calling", Toast.LENGTH_SHORT)
-                    .show()
-
-
-            } else if (contact_1_update.text.trim().length < 10 ||
-                contact_2_update.text.trim().length < 10 ||
-                contact_3_update.text.trim().length < 10
-            ) {
-                Toast.makeText(this, "Please Enter A Valid  Mobile Numbers", Toast.LENGTH_SHORT).show()
-
-
-            } else {
-
+                SharedPrefManager.getInstance(this).saveSelfContactNumber(
+                    up_contact_number.text.toString()
+                )
+                SharedPrefManager.getInstance(this).storeSelfName(
+                    up_user_name.text.toString()
+                )
                 SharedPrefManager.getInstance(this).SaveEmergencyContactNumbers(
                     contact_1_update.text.toString(),
-                    contact_2_update.text.toString(), contact_3_update.text.toString()
-                )
-                emer_contact_details_update.setText("Contact  Numbers are Updated Successfully")
-                //Toast.makeText(this, "Contact  Numbers are Saved Successfully", Toast.LENGTH_SHORT).show()
-                contact_1_update.setText("")
-                contact_2_update.setText("")
-                contact_3_update.setText("")
-                save_security_btn_update.isEnabled = false;
+                    contact_2_update.text.toString(),
+                    contact_3_update.text.toString()
 
+                )
+                startActivity(Intent(this,AddDetailsActivity::class.java))
 
             }
+
         }
+
+
 
     }
 }
