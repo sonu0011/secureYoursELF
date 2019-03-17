@@ -21,7 +21,7 @@
     >
 
         <TextView
-
+                android:background="@drawable/design"
                 android:id="@+id/wrbutton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

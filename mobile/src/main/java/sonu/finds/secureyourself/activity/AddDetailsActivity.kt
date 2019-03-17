@@ -12,15 +12,20 @@ import android.provider.Settings
 import androidx.appcompat.app.AppCompatActivity
 import android.telecom.TelecomManager
 import android.telephony.SmsManager
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.ScrollView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.marginBottom
+import androidx.core.view.marginTop
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -39,13 +44,14 @@ class AddDetailsActivity : AppCompatActivity() {
 
     private val TAG = "AddDetailsActivity"
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_details)
+            supportActionBar!!.title = "High Secutiry Alert"
 
-        //check permission for default calling app
-         offerReplacingDefaultDialer()
+
+        offerReplacingDefaultDialer()
+
 
         val intvalue =  intent.getIntExtra("updateIntent",0)
         if (intvalue == 0 ){
@@ -66,27 +72,34 @@ class AddDetailsActivity : AppCompatActivity() {
         val locationManager:LocationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
         if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
             val alertDialog =  AlertDialog.Builder(this);
-
+            alertDialog.setCancelable(false)
 
         alertDialog.setTitle("GPS is not Enabled!");
 
-        alertDialog.setMessage("Do you want to turn on GPS?");
+        alertDialog.setMessage("Please Turn On GPS for working of this app ");
 
             alertDialog.setPositiveButton("YES"){dialog, which ->
                 // Do something when user press the positive button
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
 
-                // Change the app background color
             }
 
 
-            // Display a negative button on alert dialog
+//             Display a negative button on alert dialog
             alertDialog.setNegativeButton("No"){dialog,which ->
-                Toast.makeText(applicationContext,"Please Turn On Gps Location Manually",Toast.LENGTH_SHORT).show()
+                Toast.makeText(applicationContext,"Please Turn On GPS  Location Manually",Toast.LENGTH_SHORT).show()
          dialog.cancel()
             }
 
-        alertDialog.show()
+
+        val dialog =  alertDialog.show()
+            val button  =  dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+                 val params =  LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+            params.setMargins(0,0,50,0);
+            button.setLayoutParams(params);
         }
 
 
@@ -256,13 +269,15 @@ class AddDetailsActivity : AppCompatActivity() {
         val dialog = AlertDialog.Builder(this)
         dialog.setMessage(msg)
             .setPositiveButton("Yes") { paramDialogInterface, paramInt ->
-                //  permissionsclass.requestPermission(type,code);
+
+
                 startActivity(Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,Uri.parse(packageName)))
             }
             .setNegativeButton("Cancel") {
                     paramDialogInterface, paramInt -> finish()
             }
         dialog.show()
+
     }
 
 
@@ -270,20 +285,38 @@ class AddDetailsActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
+        checkValueAndPerformAciton()
+
+        }
+
+    private fun checkValueAndPerformAciton() {
         if (SharedPrefManager.getInstance(this).GetEmergencyContactNumbers() != null &&
             SharedPrefManager.getInstance(this).getSelfContactNumber() != null
-            && SharedPrefManager.getInstance(this).selfContactNumber !=null
+            && SharedPrefManager.getInstance(this).selfNmae !=null
             && SharedPrefManager.getInstance(this).storeMessage !=null
         ) {
+//            var displayMetrics =  DisplayMetrics()
+//            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+//            var height = displayMetrics.heightPixels;
+//            var width = displayMetrics.widthPixels;
+//             var rmainingheight =  height - 360.00
+//           var params1 = textAlert.getLayoutParams();
+//params1.height = rmainingheight.toInt()
+//textAlert.setLayoutParams(params1)
 
             contacts_layout.visibility = View.GONE
             welcomeImage.visibility = View.VISIBLE
+            textAlert.visibility = View.VISIBLE
+            icon_Logo.visibility = View.GONE
+
+
+
 
         }
 
 
 
-        save_details_btn.setOnClickListener {
+    save_details_btn.setOnClickListener {
             if (user_name.text.toString().trim().length == 0){
                 Toast.makeText(this,"Please Enter Your Name",Toast.LENGTH_SHORT).show()
             }
@@ -368,15 +401,8 @@ class AddDetailsActivity : AppCompatActivity() {
         when (resultCode) {
             RESULT_OK -> {
 
-                if (SharedPrefManager.getInstance(this).GetEmergencyContactNumbers() != null &&
-                    SharedPrefManager.getInstance(this).getSelfContactNumber() != null
-                ) {
-                    contacts_layout.visibility = View.INVISIBLE
-                    welcomeImage.visibility = View.VISIBLE
 
-                }
-
-                //permission granted for default app calling
+                checkValueAndPerformAciton()
 
 
             }
@@ -399,8 +425,9 @@ class AddDetailsActivity : AppCompatActivity() {
 
 
                 // Display a negative button on alert dialog
-                alertDialog.setNegativeButton("No"){dialog,which ->
-                    Toast.makeText(applicationContext,"Please Turn On Gps Location Manually",Toast.LENGTH_SHORT).show()
+                alertDialog.setNegativeButton("No"){
+                        dialog,which ->
+                    Toast.makeText(applicationContext,"This  Permission is mandatory for running this app",Toast.LENGTH_SHORT).show()
                     dialog.cancel()
                     finishAffinity()
                 }

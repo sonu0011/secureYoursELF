@@ -1,187 +1,202 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
+
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
         xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
         tools:context=".activity.AddDetailsActivity"
         android:layout_height="match_parent">
-<RelativeLayout
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-
-    <ImageView android:src="@drawable/welcome"
-               android:background="#fff"
-               android:visibility="gone"
-               android:id="@+id/welcomeImage"
-               android:layout_centerInParent="true"
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
-               android:scaleType="centerCrop"
-               android:contentDescription="TODO"/>
-
-
-
-    <LinearLayout
-
-            android:id="@+id/contacts_layout"
-            android:orientation="vertical"
+    <RelativeLayout
+            android:gravity="start"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/relativeLayour"
             android:layout_width="match_parent"
-            android:gravity="clip_horizontal"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:padding="5dp"
             android:layout_height="match_parent">
-        <ImageView
-                    android:src="@drawable/iconimg"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_width="wrap_content"
-                   android:layout_height="wrap_content"/>
-        <com.google.android.material.textfield.TextInputLayout
-
-                android:layout_width="match_parent"
-                android:layout_margin="5dp"
-                android:padding="4dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                android:layout_height="wrap_content">
-
-            <com.google.android.material.textfield.TextInputEditText
-                    android:maxLength="20"
-
-                    android:layout_width="match_parent"
-                    android:hint="Enter Your Name"
-
-                    android:inputType="textPersonName"
-                    android:id="@+id/user_name"
-                    android:layout_height="wrap_content"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-
-                android:layout_width="match_parent"
-                android:layout_margin="5dp"
-                android:padding="4dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                android:layout_height="wrap_content">
-
-            <com.google.android.material.textfield.TextInputEditText
-                    android:maxLength="10"
-
-                    android:layout_width="match_parent"
-                    android:hint="Enter Your Contact Number "
-
-                    android:inputType="number"
-                    android:id="@+id/mobile_number"                    android:layout_height="wrap_content"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
+        <ImageView android:src="@drawable/newlogo"
+                   android:visibility="gone"
+                   android:id="@+id/welcomeImage"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:scaleType="centerInside"
+    android:background="#fff"
+                   android:contentDescription="TODO"/>
         <TextView
-                android:textColor="#AA000000"
-                android:id="@+id/emer_contact_details"
-                android:layout_margin="10sp"
-                android:textSize="16sp"
-
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/emer_heading"
-        />
-
-        <com.google.android.material.textfield.TextInputLayout
-
+                android:layout_below="@+id/welcomeImage"
+                android:text="HS - ALERT IS ONLINE"
+                android:background="@color/colorPrimaryDark"
+                android:textSize="20sp"
+                android:textColor="#fff"
+                android:layout_marginTop="10dp"
+                android:padding="10dp"
+                android:gravity="center"
+                android:id="@+id/textAlert"
+                android:visibility="gone"
+                android:layout_centerHorizontal="true"
                 android:layout_width="match_parent"
-                android:layout_margin="5dp"
-                android:padding="4dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                android:layout_height="wrap_content">
+                  android:layout_height="wrap_content"/>
 
-            <com.google.android.material.textfield.TextInputEditText
+
+        <LinearLayout
+
+                android:id="@+id/contacts_layout"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:gravity="clip_horizontal"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:padding="5dp"
+                android:layout_height="match_parent">
+            <ImageView
+                    android:id="@+id/icon_Logo"
+                    android:src="@drawable/newlogopng"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="100sp"
+                    android:layout_height="100sp"/>
+            <com.google.android.material.textfield.TextInputLayout
 
                     android:layout_width="match_parent"
-                    android:hint="Contact Number 1"
-                    android:maxLength="10"
+                    android:layout_margin="5dp"
+                    android:padding="4dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_height="wrap_content">
 
-                    android:inputType="number"
-                    android:id="@+id/contact_1"
-                    android:layout_height="wrap_content"/>
+                <com.google.android.material.textfield.TextInputEditText
+                        android:maxLength="20"
 
-        </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_width="match_parent"
+                        android:hint="Enter Your Name"
 
-        <com.google.android.material.textfield.TextInputLayout
+                        android:inputType="textPersonName"
+                        android:id="@+id/user_name"
+                        android:layout_height="wrap_content"/>
 
-                android:layout_width="match_parent"
-                android:layout_margin="5dp"
-                android:padding="4dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                android:layout_height="wrap_content">
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputEditText
-
-                    android:layout_width="match_parent"
-                    android:hint="Contact Number 2"
-                    android:maxLength="10"
-
-                    android:inputType="number"
-                    android:id="@+id/contact_2"
-                    android:layout_height="wrap_content"/>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-
-                android:layout_width="match_parent"
-                android:layout_margin="5dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                android:layout_height="wrap_content">
-
-            <com.google.android.material.textfield.TextInputEditText
+            <com.google.android.material.textfield.TextInputLayout
 
                     android:layout_width="match_parent"
-                    android:hint="Contact Number 3"
+                    android:layout_margin="5dp"
+                    android:padding="4dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_height="wrap_content">
 
-                    android:maxLength="10"
-                    android:inputType="number"
-                    android:id="@+id/contact_3"
-                    android:layout_height="wrap_content"/>
+                <com.google.android.material.textfield.TextInputEditText
+                        android:maxLength="10"
 
-        </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_width="match_parent"
+                        android:hint="Enter Your Contact Number "
 
+                        android:inputType="number"
+                        android:id="@+id/mobile_number" android:layout_height="wrap_content"/>
 
-        <com.google.android.material.textfield.TextInputLayout
+            </com.google.android.material.textfield.TextInputLayout>
 
-                android:layout_width="match_parent"
-                android:layout_margin="5dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
-                android:layout_height="wrap_content">
+            <TextView
+                    android:textColor="#AA000000"
+                    android:id="@+id/emer_contact_details"
+                    android:layout_margin="10sp"
+                    android:textSize="16sp"
 
-            <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/emer_heading"
+            />
+
+            <com.google.android.material.textfield.TextInputLayout
 
                     android:layout_width="match_parent"
-                    android:hint="Enter Message You Want To Send "
-                    android:inputType="textMultiLine"
-                    android:lines="5"
-                    android:maxLines="3"
-                    android:minLines="3"
-                    android:scrollbars="vertical"
-                    android:id="@+id/user_message"
+                    android:layout_margin="5dp"
+                    android:padding="4dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+
+                        android:layout_width="match_parent"
+                        android:hint="Contact Number 1"
+                        android:maxLength="10"
+
+                        android:inputType="number"
+                        android:id="@+id/contact_1"
+                        android:layout_height="wrap_content"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_margin="5dp"
+                    android:padding="4dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+
+                        android:layout_width="match_parent"
+                        android:hint="Contact Number 2"
+                        android:maxLength="10"
+
+                        android:inputType="number"
+                        android:id="@+id/contact_2"
+                        android:layout_height="wrap_content"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_margin="5dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+
+                        android:layout_width="match_parent"
+                        android:hint="Contact Number 3"
+
+                        android:maxLength="10"
+                        android:inputType="number"
+                        android:id="@+id/contact_3"
+                        android:layout_height="wrap_content"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_margin="5dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+
+                        android:layout_width="match_parent"
+                        android:hint="Enter Message You Want To Send "
+                        android:inputType="textMultiLine"
+                        android:lines="5"
+                        android:maxLines="3"
+                        android:minLines="3"
+                        android:text="@string/default_message"
+                        android:scrollbars="vertical"
+                        android:id="@+id/user_message"
+                        android:layout_height="wrap_content"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <Button
+                    android:text="Add Details"
+                    android:textColor="#fff"
+                    android:padding="4dp"
+                    android:id="@+id/save_details_btn"
+                    android:layout_margin="5dp"
+                    android:layout_gravity="start"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
-        </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
 
-
-        <Button
-        android:text="Add Details"
-        android:textColor="#fff"
-        android:padding="4dp"
-        android:id="@+id/save_details_btn"
-        android:layout_margin="5dp"
-        android:layout_gravity="start"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
-
-    </LinearLayout>
-
-</RelativeLayout>
+    </RelativeLayout>
 
 </ScrollView>

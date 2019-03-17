@@ -17,6 +17,7 @@ class UpdateContactDetails : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_update_contact_details)
+        supportActionBar!!.title = "High Secutiry Alert"
 
         sharedPrefManager =  SharedPrefManager.getInstance(this)
         up_user_name.setText(sharedPrefManager.selfNmae)

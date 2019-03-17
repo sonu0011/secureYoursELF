@@ -14,7 +14,7 @@ import com.google.android.gms.wearable.WearableListenerService;
 import sonu.finds.secureyourself.storage.SharedPrefManager;
 import sonu.finds.secureyourself.utills.Constant;
 import timber.log.Timber;
-public class ListenerService extends WearableListenerService implements  DataClient.OnDataChangedListener {
+public class ListenerService extends WearableListenerService  {
     String TAG = "mobile Listener";
     String datapath = "/data_path";
     String[] contactdetails  = new String[3];
@@ -54,27 +54,27 @@ public class ListenerService extends WearableListenerService implements  DataCli
         }
     }
 
-    @SuppressLint("BinaryOperationInTimber")
-    @Override
-    public void onDataChanged(@NonNull DataEventBuffer dataEventBuffer) {
-        Timber.d("onDataChanged: " + dataEventBuffer);
-        for (DataEvent event : dataEventBuffer) {
-            if (event.getType() == DataEvent.TYPE_CHANGED) {
-                String path = event.getDataItem().getUri().getPath();
-                if (datapath.equals(path)) {
-                    DataMapItem dataMapItem = DataMapItem.fromDataItem(event.getDataItem());
-                    String message = dataMapItem.getDataMap().getString("message");
-                    Timber.tag(TAG).v("Wear activity received message: " + message);
-                    // Display message in U-I
+//    @SuppressLint("BinaryOperationInTimber")
+//    @Override
+//    public void onDataChanged(@NonNull DataEventBuffer dataEventBuffer) {
+//        Timber.d("onDataChanged: " + dataEventBuffer);
+//        for (DataEvent event : dataEventBuffer) {
+//            if (event.getType() == DataEvent.TYPE_CHANGED) {
+//                String path = event.getDataItem().getUri().getPath();
+//                if (datapath.equals(path)) {
+//                    DataMapItem dataMapItem = DataMapItem.fromDataItem(event.getDataItem());
+//                    String message = dataMapItem.getDataMap().getString("message");
+//                    Timber.tag(TAG).v("Wear activity received message: " + message);
+//                    // Display message in U-I
+//
+//                } else {
+//                    Timber.e("Unrecognized path: " + path);
+//                }
+//            } else if (event.getType() == DataEvent.TYPE_DELETED) {
+//                Timber.tag(TAG).v("Data deleted : " + event.getDataItem().toString());
+//            } else {
+//                Timber.e("Unknown data event Type = " + event.getType());
+//            }
+//        }
 
-                } else {
-                    Timber.e("Unrecognized path: " + path);
-                }
-            } else if (event.getType() == DataEvent.TYPE_DELETED) {
-                Timber.tag(TAG).v("Data deleted : " + event.getDataItem().toString());
-            } else {
-                Timber.e("Unknown data event Type = " + event.getType());
-            }
-        }
-    }
 }

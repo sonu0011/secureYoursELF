@@ -29,8 +29,7 @@
         android:screenOrientation="portrait">
         </activity>
         <activity android:name=".activity.UpdateContactDetails"
-                  android:screenOrientation="portrait"
-    >
+                  android:screenOrientation="portrait">
         </activity>
         <activity android:name=".activity.AddDetailsActivity"
         android:screenOrientation="portrait">

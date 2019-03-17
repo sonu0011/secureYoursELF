@@ -17,10 +17,10 @@
 
 
     <ImageView
-            android:src="@drawable/iconimg"
+            android:src="@drawable/newlogopng"
             android:layout_gravity="center_horizontal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="100sp"
+            android:layout_height="100sp"
             android:contentDescription="TODO"/>
     <com.google.android.material.textfield.TextInputLayout
 

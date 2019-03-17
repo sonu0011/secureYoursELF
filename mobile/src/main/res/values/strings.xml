@@ -5,4 +5,5 @@
     <string name="emer_heading">Add contacts to alert in emergency</string>
     <string name="update_phone_details">Update contacts to alert in emergency</string>
     <string name="eup_mer_heading">Update contacts to alert in emergency</string>
+    <string name="default_message">Emergency,Emergency Immediate Help Required</string>
 </resources>
