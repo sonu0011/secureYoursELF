@@ -140,6 +140,7 @@ class DialerActivity() : AppCompatActivity() {
                 val messageToSend = SharedPrefManager.getInstance(this).storeMessage
                 Timber.d("call is active ")
                 val selfContat = SharedPrefManager.getInstance(this).selfNmae
+
                 SmsManager.getDefault()
                     .sendTextMessage(number, null, messageToSend + "\n" + " -- " + selfContat, null, null)
 
@@ -181,7 +182,7 @@ class DialerActivity() : AppCompatActivity() {
                 }
 
 
-                countDownTimer1 = object : CountDownTimer(10000, 1000) {
+                countDownTimer1 = object : CountDownTimer(15000, 1000) {
                     override fun onTick(millisUntilFinished: Long) {
                         if (countDownTimer != null) {
                             countDownTimer!!.cancel()
